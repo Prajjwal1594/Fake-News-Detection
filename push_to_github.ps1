@@ -9,8 +9,8 @@ git remote add origin https://github.com/prajjwal1594/Fake-News-Detection.git
 Write-Host "Staging all project files..." -ForegroundColor Cyan
 git add .
 
-Write-Host "Creating initial commit..." -ForegroundColor Cyan
-git commit -m "Initial commit: Fake news detection application with ML models and Vercel deployment"
+Write-Host "Creating commit..." -ForegroundColor Cyan
+git commit -m "Fix Vercel function path: Add api/index.py entrypoint and update vercel.json"
 
 Write-Host "Renaming branch to main..." -ForegroundColor Cyan
 git branch -M main
