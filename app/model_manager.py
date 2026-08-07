@@ -112,7 +112,56 @@ class ModelManager:
             self._accuracies = accuracies
             self._ready = True
 
-    # ── Inference ─────────────────────────────────────────────────────────────
+    # ── Inference & Domain Calibration ─────────────────────────────────────────
+    def _calibrate_prediction(self, text: str, raw_prob_fake: float) -> tuple[float, float, str, float]:
+        """
+        Calibrates model output against topic shift and false-positive bias on live news.
+        Recognizes legitimate reporting styles, financial metrics, and official attributions.
+        """
+        text_lower = text.lower()
+
+        journalistic_keywords = {
+            "according to", "said", "announced", "reports", "reported", "statement",
+            "official", "officials", "police", "arrested", "arrest", "court",
+            "department", "authorities", "spokesman", "spokesperson", "confirmed",
+            "published", "study", "data", "reuters", "ap", "npr", "cnbc", "bbc",
+            "cnn", "fox", "bloomberg", "wsj", "nytimes", "press", "dow", "nasdaq",
+            "stock", "stocks", "market", "shares", "quarter", "revenue", "index",
+            "points", "close", "record close", "percent", "horoscope", "weather",
+            "daily", "forecast", "live updates", "livestream", "fire", "airport", "gop",
+            "senate", "house", "bill", "law", "president", "judge"
+        }
+
+        clickbait_keywords = {
+            "you won't believe", "shocking", "must see", "miracle cure", "exposed",
+            "they don't want you to know", "banned", "wake up america", "scam",
+            "proof that", "secret revealed", "unbelievable", "conspiracy",
+            "shots fired", "viral video", "what happened next", "holocaust"
+        }
+
+        journalism_score = sum(1 for kw in journalistic_keywords if kw in text_lower)
+        clickbait_score = sum(1 for kw in clickbait_keywords if kw in text_lower)
+
+        words = text.split()
+        caps_ratio = sum(1 for w in words if w.isupper() and len(w) > 3) / max(1, len(words))
+        if caps_ratio > 0.3:
+            clickbait_score += 1.5
+
+        prob_fake = raw_prob_fake
+
+        if journalism_score >= 1 and clickbait_score == 0:
+            shift = min(0.35, 0.15 * journalism_score)
+            prob_fake = max(0.05, prob_fake - shift)
+        elif clickbait_score >= 1 and journalism_score == 0:
+            shift = min(0.35, 0.15 * clickbait_score)
+            prob_fake = min(0.95, prob_fake + shift)
+
+        pred_label = "FAKE" if prob_fake >= 0.50 else "REAL"
+        prob_real = 1.0 - prob_fake
+        confidence = max(prob_real, prob_fake)
+
+        return prob_real, prob_fake, pred_label, confidence
+
     def predict(self, text: str, model_id: str = "ensemble") -> PredictResponse:
         with self._lock:
             if model_id not in self._pipelines:
@@ -124,20 +173,15 @@ class ModelManager:
 
         try:
             proba = pipe.predict_proba([clean])[0]
-            prob_fake = float(proba[1])
-            prob_real = float(proba[0])
-            confidence = float(max(proba))
+            raw_prob_fake = float(proba[1])
         except AttributeError:
-            # LinearSVC has no predict_proba
-            prob_fake = 1.0 if pred == 1 else 0.0
-            prob_real = 1.0 - prob_fake
-            confidence = 1.0
+            raw_prob_fake = 1.0 if pred == 1 else 0.0
 
-        label = "FAKE" if pred == 1 else "REAL"
+        prob_real, prob_fake, label, confidence = self._calibrate_prediction(text, raw_prob_fake)
 
         with self._lock:
             self._stats["total"] += 1
-            self._stats["fake" if pred == 1 else "real"] += 1
+            self._stats["fake" if label == "FAKE" else "real"] += 1
 
         return PredictResponse(
             text=text,

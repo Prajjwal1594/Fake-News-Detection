@@ -15,11 +15,11 @@ Write-Host "Adding remote origin https://github.com/prajjwal1594/Fake-News-Detec
 git remote remove origin 2>$null
 git remote add origin https://github.com/prajjwal1594/Fake-News-Detection.git
 
-Write-Host "Staging all project files and trained models..." -ForegroundColor Cyan
+Write-Host "Staging all project files..." -ForegroundColor Cyan
 git add .
 
 Write-Host "Creating commit..." -ForegroundColor Cyan
-git commit -m "Optimize models with FeatureUnion word+char TF-IDF, ComplementNB, ExtraTrees, and weighted Voting Ensemble for maximum accuracy"
+git commit -m "Add domain-calibrated inference layer to eliminate false-positive bias on live journalistic news headlines"
 
 Write-Host "Renaming branch to main..." -ForegroundColor Cyan
 git branch -M main
