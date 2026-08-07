@@ -1,0 +1,22 @@
+{
+  "logistic_regression": {
+    "accuracy": 0.8216,
+    "roc_auc": 0.9024
+  },
+  "linear_svm": {
+    "accuracy": 0.8193,
+    "roc_auc": null
+  },
+  "random_forest": {
+    "accuracy": 0.8103,
+    "roc_auc": 0.8919
+  },
+  "naive_bayes": {
+    "accuracy": 0.8201,
+    "roc_auc": 0.9074
+  },
+  "ensemble": {
+    "accuracy": 0.8307,
+    "roc_auc": 0.9159
+  }
+}
