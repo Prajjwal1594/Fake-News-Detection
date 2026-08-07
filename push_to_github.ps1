@@ -2,9 +2,9 @@
 Write-Host "Initializing Git Repository..." -ForegroundColor Cyan
 git init
 
-Write-Host "Adding remote origin https://github.com/prajjwal1594/FAKE-NEWS-DETECTION.git..." -ForegroundColor Cyan
+Write-Host "Adding remote origin https://github.com/prajjwal1594/Fake-News-Detection.git..." -ForegroundColor Cyan
 git remote remove origin 2>$null
-git remote add origin https://github.com/prajjwal1594/FAKE-NEWS-DETECTION.git
+git remote add origin https://github.com/prajjwal1594/Fake-News-Detection.git
 
 Write-Host "Staging all project files..." -ForegroundColor Cyan
 git add .
@@ -15,7 +15,7 @@ git commit -m "Initial commit: Fake news detection application with ML models an
 Write-Host "Renaming branch to main..." -ForegroundColor Cyan
 git branch -M main
 
-Write-Host "Pushing to GitHub repository (github.com/prajjwal1594/FAKE-NEWS-DETECTION)..." -ForegroundColor Cyan
+Write-Host "Pushing to GitHub repository (github.com/prajjwal1594/Fake-News-Detection)..." -ForegroundColor Cyan
 git push -u origin main --force
 
 Write-Host "Successfully pushed to GitHub!" -ForegroundColor Green
