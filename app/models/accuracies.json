@@ -1,22 +1,22 @@
 {
   "logistic_regression": {
-    "accuracy": 0.8216,
-    "roc_auc": 0.9024
+    "accuracy": 0.8398,
+    "roc_auc": 0.9163
   },
   "linear_svm": {
-    "accuracy": 0.8193,
-    "roc_auc": null
+    "accuracy": 0.8375,
+    "roc_auc": 0.9158
   },
   "random_forest": {
-    "accuracy": 0.8103,
-    "roc_auc": 0.8919
+    "accuracy": 0.8458,
+    "roc_auc": 0.9133
   },
   "naive_bayes": {
-    "accuracy": 0.8201,
-    "roc_auc": 0.9074
+    "accuracy": 0.8269,
+    "roc_auc": 0.9236
   },
   "ensemble": {
-    "accuracy": 0.8307,
-    "roc_auc": 0.9159
+    "accuracy": 0.845,
+    "roc_auc": 0.9236
   }
 }

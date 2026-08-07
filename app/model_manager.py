@@ -48,13 +48,12 @@ class TextPreprocessor:
         text = text.lower()
         text = re.sub(r"https?://\S+|www\.\S+", "", text)
         text = re.sub(r"<.*?>", "", text)
-        text = re.sub(r"\d+", "", text)
-        text = text.translate(str.maketrans("", "", string.punctuation))
+        text = re.sub(r"\s+", " ", text).strip()
         tokens = text.split()
         tokens = [
             self.lemmatizer.lemmatize(t)
             for t in tokens
-            if t not in self.stop_words and len(t) > 2
+            if t not in self.stop_words
         ]
         return " ".join(tokens)
 
